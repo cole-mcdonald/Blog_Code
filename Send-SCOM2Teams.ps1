@@ -26,7 +26,7 @@ $alert = Get-SCOMAlert -ComputerName $SCOM_MS | Where-Object -Property ID -eq $A
 $thisSub = Get-SCOMNotificationSubscription -ComputerName $SCOM_MS | Where-Object { $_.Id -eq $SubscriptionID }
 $delay = $thisSub.Configuration.IdleMinutes
 
-## The knowledge parts are pulled from Tao Yang's Enhanced Email
+## The knowledge parts are pulled from Tyson Paul's 2.3 version of Tao Yang's Enhanced Email 2.0
 ## ( https://blogs.msdn.microsoft.com/tysonpaul/2014/08/04/scom-enhanced-email-notification-script-version-2-1/ )
 
 # Company Knowledge
