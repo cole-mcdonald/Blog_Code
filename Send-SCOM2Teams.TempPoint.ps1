@@ -11,11 +11,11 @@
 ####################################
 
 param (
-	[string]$AlertID = "<guid-for-alert-goes-here>",
-	[string]$SubscriptionID = "<guid-for-subscription-goes-here>",
-	[string]$SCOM_HOOK = "<incoming webhook connector URL from teams channel>",
-	[string]$SCOM_MS = "scom_ms.domain.com",
-	[string]$SCOM_URL = "https://scom.domain.com"
+    $AlertID = "<guid-for-alert-goes-here>",
+    $SubscriptionID = "<guid-for-subscription-goes-here>",
+    $SCOM_HOOK = "<incoming webhook connector URL from teams channel>",
+    $SCOM_MS = "scom_ms.domain.com",
+    $SCOM_URL = "https://scom.domain.com"
 )
 
 # Import the Operations Manager Module
@@ -26,16 +26,12 @@ $alert = Get-SCOMAlert -ComputerName $SCOM_MS | Where-Object -Property ID -eq $A
 $thisSub = Get-SCOMNotificationSubscription -ComputerName $SCOM_MS | Where-Object { $_.Id -eq $SubscriptionID }
 $delay = $thisSub.Configuration.IdleMinutes
 
-## The knowledge parts and toHTML functions are pulled from Tyson Paul's 2.3 version of Tao Yang's Enhanced Email 2.0
+## The knowledge parts are pulled from Tyson Paul's 2.3 version of Tao Yang's Enhanced Email 2.0
 ## ( https://blogs.msdn.microsoft.com/tysonpaul/2014/08/04/scom-enhanced-email-notification-script-version-2-1/ )
 
 # Company Knowledge
-# Functions to parse and sanitize the content
-function trim-braces ($inString) {
-	$instring = $inString.trimstart("{")
-	$instring = $inString.trimend("}")
-	return $inString
-}
+# Functions to parse the content
+# Needed to remove quotes to get the JSON to pass correctly as well.
 function fnMamlToHTML ($MAMLText) {
     $HTMLText = ""
     $HTMLText = $MAMLText -replace ('xmlns:maml="http://schemas.microsoft.com/maml/2004/10"')
@@ -51,6 +47,7 @@ function fnMamlToHTML ($MAMLText) {
     $HTMLText = $HTMLText -replace ("`"", " ")
     return $HTMLText
 }
+
 function fnTrimHTML ($HTMLText) {
     $TrimmedText = ""
     $TrimmedText = $HTMLText -replace ("&lt;", "<")
@@ -74,10 +71,6 @@ function fnTrimHTML ($HTMLText) {
     $TrimmedText = $TrimmedText -replace ("`"", " ")
     return $TrimmedText
 }
-
-# Strip the curly braces off of the incoming values
-$alertID = trim-braces -inString $alertID
-$SubscriptionID = trim-braces -inString $SubscriptionID
 
 # Load the SDK
 [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.EnterpriseManagement.OperationsManager.Common") | Out-Null
@@ -121,7 +114,7 @@ if ($KnowledgeArticles -eq $null) {
 # Empty message variable
 $message = ""
 # Title
-$title = "SCOM Dispatch`n"
+$title = "SCOM Dispatch *** TEST ***`n"
 # Time and Path
 $message += "$($alert.TimeRaised) - $($alert.MonitoringObjectPath)`n"
 # Alert Name
